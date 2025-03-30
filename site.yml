@@ -11,5 +11,5 @@
   become: yes
   roles:
     - tls_node_exporter
-    - nginx_proxy
+    - nginx_remote_servers
     - node_exporter
