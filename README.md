@@ -1,4 +1,4 @@
-remote_servers# Devops Engineer Challenge
+# Devops Engineer Challenge
 
 ## Diseño de solución de monitorización centralizada
 
@@ -23,9 +23,9 @@ Basándonos en estos requisitos,
 
 La solución propuesta se basa en herramientas open source conocidas y maduras, pensadas para ser desplegadas de manera automatizada, escalable y replicable.
 
-Para la recopilación y centralización de de información emplearemos **Prometheus** y para su visualización utilizaremos **Grafana** en un servidor dedicado a la monitorización, mientras que los nodos monitorizados utilizarán **Node Exporter** para exponer sus métricas.
+Para la recopilación y centralización de información emplearemos **Prometheus** y para su visualización utilizaremos **Grafana** en un servidor dedicado a la monitorización, mientras que los nodos monitorizados utilizarán **Node Exporter** para exponer sus métricas.
 
-Para la agregación y consulta de logs de las herramientas que conformen el sistema se propone integrar **Loki** en el servidor de monitorización y **Promtail** como agente en nodo de la infraestructura.
+Para la agregación y consulta de logs de las herramientas que conformen el sistema se propone integrar **Loki** en el servidor de monitorización y **Promtail** como agente en los nodos de la infraestructura.
 
 ## Gestión de la seguridad y autenticación
 
@@ -42,7 +42,7 @@ Además, se configurará firewall en todos los nodos para restringir el tráfico
 
 ## Despliegue automatizado
 
-La solución se desplegará mediante **Ansible**, que permite que las tareas de despliegue sean replicables y automatizadas. Como toda la automatización se realiza a través de SSH, y como se asume que todos los nodos corren Ubuntu 24.04, basta con tener acceso a los nodos mediante una clave pública para que el despliegue se realice de manera homogénea, con independencia de que los servidores sean on-premise o formen parte de un proveedor cloud.
+La solución se desplegará mediante **Ansible**, que permite que las tareas de despliegue sean replicables y automatizadas. Como toda la automatización se realiza a través de SSH, y como se asume que todos los nodos corren Ubuntu 24.04, basta con tener acceso a los nodos mediante una clave pública para que el despliegue se realice de manera homogénea, sin importar que los servidores sean on-premise o formen parte de un proveedor cloud.
 
 Se elaborarán playbooks para el despliegue y configuración de todas las herramientas y proxies, así como para la gestión de los certificados TLS.
 
@@ -53,8 +53,6 @@ La retención de datos en Prometheus es, por defecto, de 15 días, pero es posib
 Si el proyecto requiere dividir la carga de Prometheus entre varios nodos, es posible **federar varias instancias** entre sí, de manera que cada una de ellas recolecte datos de un subconjunto de los nodos monitorizados.
 
 En caso de requerir una retención de datos a muy largo plazo y de gran capacidad, **Thanos** es una solución open source que se utiliza comúnmente para este propósito.
-
-En cuanto a Grafana, es posible escalar horizontalmente con Kubernetes y utilizar balanceadores de carga entre nodos, aunque no es un requerimiento que consideramos en esta prueba de concepto.
 
 ## Prueba de concepto de la solución propuesta
 
@@ -81,7 +79,7 @@ Si ya se tienen servidores disponibles, se puede obviar este paso. Para instalar
 sudo snap install multipass
 ```
 
-Creamos algunas máquinas virtuales: utilizaremos la primera par el servidor de monitorización y resto serán los nodos a monitorizar.
+Creamos algunas máquinas virtuales: utilizaremos la primera para el servidor de monitorización y el resto serán los nodos a monitorizar.
 
 ```bash
 multipass launch 24.04 -n vm1
@@ -95,13 +93,13 @@ Comprobamos que las VM se han lanzado correctamente
 multipass list
 ```
 
-Tomamos nota de las IPs para configurar el inventario de Ansible.
+Tomamos nota de las IPs para configurar el inventario de Ansible:
 
 ```
 Name         State    IPv4           Image
-vm1         Running  192.168.64.2   Ubuntu 24.04 LTS
-vm2         Running  192.168.64.3   Ubuntu 24.04 LTS
-vm3         Running  192.168.64.4   Ubuntu 24.04 LTS
+vm1         Running  10.45.153.106   Ubuntu 24.04 LTS
+vm2         Running  10.45.153.201   Ubuntu 24.04 LTS
+vm3         Running  10.45.153.182   Ubuntu 24.04 LTS
 ```
 
 #### Iniciar servicios de OpenSSH en todos los servidores
@@ -149,7 +147,7 @@ Este playbook realizará las siguientes tareas:
 - Para el servidor de monitorización, se aplican las tareas asociadas a los siguientes roles:
 
   - **tls_monitoring**: genera una clave privada, la petición de firma del certificado y un certificado auto-firmado.
-  - **prometheus**: inicia el servicio de Prometheus y configura los certificados TLS. Además, copia una plantilla de configuración muy simple en que se encuentran las direcciones IP de los nodos que exportarán métricas: \(es necesario cambiarlas por las de los servidores que utilicemos\).
+  - **prometheus**: inicia el servicio de Prometheus y configura los certificados TLS. Además, copia una plantilla de configuración muy simple en que se encuentran las direcciones IP de los nodos que exportarán métricas: \(es necesario sustituirlas por las direcciones IP de los servidores en uso\).
   - **grafana**: agrega el repositorio de Grafana, instala el servicio, configura los certificados TLS, configura Prometheus como fuente de datos y carga una plantilla de dashboard mínima que monitorizará el uso de CPU de los nodos.
 
 - Para los nodos monitorizados se aplican las tareas de los siguientes roles:
@@ -159,4 +157,16 @@ Este playbook realizará las siguientes tareas:
 
 ### Conclusión
 
-Con esta prueba de concepto tenemos el esqueleto de una solución distribuida de monitorización.
+Esta prueba de concepto muestra la viabilidad de una solución de monitorización, basada en herramientas de código abierto como Prometheus, Grafana y Node Exporter. Mediante Ansible logramos un despliegue automatizado y reproducible en servidores distribuidos, garantizando una instalación replicable y facilitando su mantenimiento.
+
+Si bien esta implementación inicial solo establece una base mínima funcional, hay varios aspectos a considerar para ampliar su funcionalidad y mejorar su seguridad, escalabilidad y automatización:
+
+1. **Seguridad y autenticación:** actualmente, se emplean certificados auto-firmados para la autenticación mutua (mTLS), lo que en un entorno de producción debería ser reemplazado por certificados emitidos por una Autoridad Certificadora. También sería recomendable implementar mecanismos de rotación y revocación de certificados para reforzar la seguridad. En esta prueba utilizamos usuarios y contraseñas por defecto que, naturalmente, sería necesario cambiar. En su lugar, también podríamos utilizar OAuth para autenticar usuarios en Prometheus y Grafana.
+
+2. **Escalabilidad:** en la prueba de concepto, Prometheus se ejecuta en una única instancia, lo que puede convertirse en un cuello de botella en entornos con una alta cantidad de métricas. Para abordar esto, podría valorarse la federación de varias instancias y distribuir la carga entre ellas, y se podría integrar Thanos para permitir almacenamiento a largo plazo. Del mismo modo, Grafana podría escalar horizontalmente mediante Kubernetes y un balanceador de carga.
+
+3. **Automatización y mantenimiento:** podríamos incluir herramientas como Ansible Vault para manejar credenciales de forma segura. También sería recomendable desarrollar mecanismos de actualización y rollback de las herramientas de monitorización sin afectar la disponibilidad del sistema.
+
+4. **Gestión de logs:** además de integrar Loki y Promtail, se podría configurar una estrategia de retención y almacenamiento distribuido para los logs, con reglas de alerta en Grafana y análisis centralizado.
+
+¡Gracias por la oportunidad de dedicar tiempo a prueba!
