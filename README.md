@@ -155,7 +155,7 @@ Este playbook realizará las siguientes tareas:
   - **nginx_remote_servers**: instala y crea un servicio de nginx, importa una plantilla de configuración e inicia el servicio como proxy inverso para Node Exporter.
   - **node_exporter**: instala e inicia Node Exporter para exponer un endpoint con las métricas para Prometheus.
 
-### Conclusión
+## Conclusión
 
 Esta prueba de concepto muestra la viabilidad de una solución de monitorización, basada en herramientas de código abierto como Prometheus, Grafana y Node Exporter. Mediante Ansible logramos un despliegue automatizado y reproducible en servidores distribuidos, garantizando una instalación replicable y facilitando su mantenimiento.
 
@@ -169,4 +169,4 @@ Si bien esta implementación inicial solo establece una base mínima funcional, 
 
 4. **Gestión de logs:** además de integrar Loki y Promtail, se podría configurar una estrategia de retención y almacenamiento distribuido para los logs, con reglas de alerta en Grafana y análisis centralizado.
 
-¡Gracias por la oportunidad de dedicar tiempo a prueba!
+¡Gracias por la oportunidad de dedicar tiempo a esta prueba! Quedo a vuestra disposición :\)
