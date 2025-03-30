@@ -1,0 +1,6 @@
+[monitoring_server]
+monitoring1 ansible_host=10.45.153.106
+
+[remote_servers]
+remote1 ansible_host=10.45.153.201
+remote2 ansible_host=10.45.153.182

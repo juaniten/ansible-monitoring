@@ -1,0 +1,14 @@
+- name: Actualizar repositorios
+  apt:
+    update_cache: yes
+
+- name: Instalar Node Exporter
+  apt:
+    name: prometheus-node-exporter
+    state: present
+
+- name: Habilitar y reiniciar Node Exporter
+  service:
+    name: prometheus-node-exporter
+    enabled: yes
+    state: restarted

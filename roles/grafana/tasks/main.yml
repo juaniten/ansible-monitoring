@@ -1,0 +1,63 @@
+- name: Añadir clave GPG de Grafana
+  apt_key:
+    url: https://apt.grafana.com/gpg.key
+    state: present
+
+- name: Añadir repositorio de Grafana
+  apt_repository:
+    repo: deb https://apt.grafana.com stable main
+    state: present
+
+- name: Actualizar repositorios
+  apt:
+    update_cache: yes
+
+- name: Instalar Grafana
+  apt:
+    name: grafana
+    state: present
+
+- name: Habilitar y reiniciar Grafana
+  service:
+    name: grafana-server
+    enabled: yes
+    state: restarted
+
+
+- name: Esperar a que Grafana inicie
+  wait_for:
+    port: 3000
+    delay: 10
+    timeout: 30
+
+- name: Configurar Prometheus como fuente de datos en Grafana
+  uri:
+    url: "http://localhost:3000/api/datasources"
+    method: POST
+    user: admin
+    password: admin
+    force_basic_auth: yes
+    headers:
+      Content-Type: "application/json"
+    body: |
+      {
+        "name": "Prometheus",
+        "type": "prometheus",
+        "url": "http://localhost:9090",
+        "access": "proxy",
+        "isDefault": true
+      }
+    status_code: [200, 409]
+
+- name: Subir dashboard predefinido a Grafana
+  uri:
+    url: "http://localhost:3000/api/dashboards/db"
+    method: POST
+    user: admin
+    password: admin
+    force_basic_auth: yes
+    headers:
+      Content-Type: "application/json"
+    body_format: json
+    body: "{{ lookup('file', 'roles/grafana/files/dashboard.json') }}"
+    status_code: [200, 409]

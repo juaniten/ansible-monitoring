@@ -1,0 +1,10 @@
+[Unit]
+Description=Node Exporter
+After=network.target
+
+[Service]
+User=nobody
+ExecStart=/usr/local/bin/node_exporter
+
+[Install]
+WantedBy=default.target

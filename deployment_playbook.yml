@@ -1,0 +1,13 @@
+---
+- name: Configurar Servidores de Monitorización
+  hosts: monitoring_server
+  become: yes
+  roles:
+    - prometheus
+    - grafana
+
+- name: Configurar Servidores Remotos (Node Exporter)
+  hosts: remote_servers
+  become: yes
+  roles:
+    - node_exporter
