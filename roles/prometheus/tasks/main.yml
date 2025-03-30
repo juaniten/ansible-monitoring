@@ -8,15 +8,6 @@
     src: prometheus.yml.j2
     dest: /etc/prometheus/prometheus.yml
 
-- name: Ensure read permissions for certificate files
-  file:
-    path: "{{ item }}"
-    mode: '0644'
-  loop:
-    - /etc/ssl/certs/monitoring/monitoring.crt
-    - /etc/ssl/certs/monitoring/monitoring.key
-  notify: Restart Prometheus
-
 - name: Change ownership of certificate files to root:prometheus
   file:
     path: "{{ item }}"
@@ -26,8 +17,9 @@
   loop:
     - /etc/ssl/certs/monitoring/monitoring.crt
     - /etc/ssl/certs/monitoring/monitoring.key
+  notify: Restart Prometheus
 
-- name: Ensure Prometheus TLS config exists
+- name: Add Prometheus TLS config 
   copy:
     dest: /etc/prometheus/web-config.yml
     content: |

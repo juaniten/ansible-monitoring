@@ -1,64 +1,59 @@
-- name: Añadir clave GPG de Grafana
+- name: Add GPG Grafana key
   apt_key:
     url: https://apt.grafana.com/gpg.key
     state: present
 
-- name: Añadir repositorio de Grafana
+- name: Add Grafana repository
   apt_repository:
     repo: deb https://apt.grafana.com stable main
     state: present
 
-- name: Actualizar repositorios
+- name: Update apt repositories
   apt:
     update_cache: yes
 
-- name: Instalar Grafana
+- name: Install Grafana
   apt:
     name: grafana
     state: present
 
-
-
-- name: Configurar Grafana para usar TLS
+- name: Configure Grafana to listen
   lineinfile:
     path: "/etc/grafana/grafana.ini"
     regexp: '^;http_addr ='
     line: 'http_addr = 0.0.0.0'
 
-- name: Habilitar TLS en Grafana
+- name: Enable TLS in Grafana
   lineinfile:
     path: "/etc/grafana/grafana.ini"
     regexp: '^;protocol ='
     line: 'protocol = https'
 
-- name: Habilitar TLS en Grafana
+- name: Add monitoring certificate
   lineinfile:
     path: "/etc/grafana/grafana.ini"
     regexp: '^;cert_file ='
     line: 'cert_file = /etc/ssl/certs/monitoring/monitoring.crt'
 
-- name: Habilitar TLS en Grafana
+- name: Add certificate key
   lineinfile:
     path: "/etc/grafana/grafana.ini"
     regexp: '^;cert_key ='
     line: 'cert_key = /etc/ssl/certs/monitoring/monitoring.key'
 
-
-
-- name: Habilitar y reiniciar Grafana
+- name: Restart Grafana
   service:
     name: grafana-server
     enabled: yes
     state: restarted
 
-
-- name: Esperar a que Grafana inicie
+- name: Wait for Grafana to load
   wait_for:
     port: 3000
     delay: 10
     timeout: 30
 
-- name: Configurar Prometheus como fuente de datos en Grafana
+- name: Configure Prometheus as a data source in Grafana
   uri:
     url: "https://localhost:3000/api/datasources"
     method: POST
@@ -86,7 +81,7 @@
     status_code: [200, 409]
     validate_certs: no  # Disable SSL certificate validation for self-signed certificates
 
-- name: Subir dashboard predefinido a Grafana
+- name: Upload a Node Exporter metrics dashboard to Grafana
   uri:
     url: "https://localhost:3000/api/dashboards/db"
     method: POST

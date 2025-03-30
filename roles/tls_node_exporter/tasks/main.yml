@@ -1,24 +1,23 @@
----
-- name: Crear directorio para los certificados de Node Exporter
+- name: Create directory for Node Exporter certificates
   file:
     path: "/etc/ssl/certs/node_exporter"
     state: directory
     mode: '0755'
 
-- name: Generar clave privada para Node Exporter
+- name: Generate private key for Node Exporter
   openssl_privatekey:
     path: "/etc/ssl/certs/node_exporter/node_exporter.key"
     size: 2048
     state: present
 
-- name: Generar CSR para Node Exporter
+- name: Generate csr for Node Exporter
   openssl_csr:
     path: "/etc/ssl/certs/node_exporter/node_exporter.csr"
     privatekey_path: "/etc/ssl/certs/node_exporter/node_exporter.key"
     common_name: "node_exporter.local"
     state: present
 
-- name: Generar el certificado autofirmado para Node Exporter
+- name: Generate self-signed certificate for Node Exporter
   openssl_certificate:
     path: "/etc/ssl/certs/node_exporter/node_exporter.crt"
     csr_path: "/etc/ssl/certs/node_exporter/node_exporter.csr"
