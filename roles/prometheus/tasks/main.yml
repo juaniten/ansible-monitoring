@@ -5,7 +5,7 @@
 
 - name: Configurar Prometheus
   copy:
-    src: prometheus.yml
+    src: prometheus.yml.j2
     dest: /etc/prometheus/prometheus.yml
 
 - name: Reiniciar Prometheus

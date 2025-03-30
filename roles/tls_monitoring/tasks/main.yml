@@ -1,0 +1,28 @@
+---
+- name: Crear directorio para los certificados
+  file:
+    path: "/etc/ssl/certs/monitoring"
+    state: directory
+    mode: '0755'
+
+- name: Generar clave privada para el servidor de monitoreo
+  openssl_privatekey:
+    path: "/etc/ssl/certs/monitoring/monitoring.key"
+    size: 2048
+    state: present
+
+- name: Generar CSR (Certificate Signing Request) para Prometheus y Grafana
+  openssl_csr:
+    path: "/etc/ssl/certs/monitoring/monitoring.csr"
+    privatekey_path: "/etc/ssl/certs/monitoring/monitoring.key"
+    common_name: "monitoring.local"
+    state: present
+
+- name: Generar el certificado autofirmado para el servidor de monitoreo
+  openssl_certificate:
+    path: "/etc/ssl/certs/monitoring/monitoring.crt"
+    csr_path: "/etc/ssl/certs/monitoring/monitoring.csr"
+    key_path: "/etc/ssl/certs/monitoring/monitoring.key"
+    provider: selfsigned
+    state: present
+    days: 365

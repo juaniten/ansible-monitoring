@@ -1,0 +1,17 @@
+server {
+    listen 443 ssl;
+    server_name node_exporter.local;
+
+    ssl_certificate /etc/ssl/certs/node_exporter/node_exporter.crt;
+    ssl_certificate_key /etc/ssl/certs/node_exporter/node_exporter.key;
+
+    location / {
+        proxy_pass http://localhost:9100;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+
+    auth_basic "Restricted";
+    auth_basic_user_file /etc/nginx/.htpasswd;
+}

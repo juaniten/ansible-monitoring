@@ -1,0 +1,22 @@
+---
+- name: Instalar Nginx
+  apt:
+    name: nginx
+    state: present
+
+- name: Subir configuración de Nginx para Node Exporter
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/sites-available/node_exporter
+
+- name: Crear un enlace simbólico de configuración de Nginx
+  file:
+    src: /etc/nginx/sites-available/node_exporter
+    dest: /etc/nginx/sites-enabled/node_exporter
+    state: link
+
+- name: Reiniciar Nginx
+  systemd:
+    name: nginx
+    enabled: yes
+    state: restarted

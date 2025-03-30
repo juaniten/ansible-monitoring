@@ -17,6 +17,28 @@
     name: grafana
     state: present
 
+
+
+- name: Configurar Grafana para usar TLS
+  lineinfile:
+    path: "/etc/grafana/grafana.ini"
+    regexp: '^;http_addr ='
+    line: 'http_addr = 0.0.0.0'
+  
+- name: Habilitar TLS en Grafana
+  lineinfile:
+    path: "/etc/grafana/grafana.ini"
+    regexp: '^;cert_file ='
+    line: 'cert_file = /etc/ssl/certs/monitoring/monitoring.crt'
+
+- name: Habilitar TLS en Grafana
+  lineinfile:
+    path: "/etc/grafana/grafana.ini"
+    regexp: '^;cert_key ='
+    line: 'cert_key = /etc/ssl/certs/monitoring/monitoring.key'
+
+
+
 - name: Habilitar y reiniciar Grafana
   service:
     name: grafana-server

@@ -1,0 +1,12 @@
+global:
+  scrape_interval: 15s
+scrape_configs:
+  - job_name: 'node_exporter'
+    scheme: https
+    tls_config:
+      cert_file: /etc/ssl/certs/monitoring/monitoring.crt
+      key_file: /etc/ssl/certs/monitoring/monitoring.key
+    static_configs:
+      - targets:
+          - "10.45.153.201:9100"
+          - "10.45.153.182:9100"
