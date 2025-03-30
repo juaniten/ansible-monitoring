@@ -24,7 +24,13 @@
     path: "/etc/grafana/grafana.ini"
     regexp: '^;http_addr ='
     line: 'http_addr = 0.0.0.0'
-  
+
+- name: Habilitar TLS en Grafana
+  lineinfile:
+    path: "/etc/grafana/grafana.ini"
+    regexp: '^;protocol ='
+    line: 'protocol = https'
+
 - name: Habilitar TLS en Grafana
   lineinfile:
     path: "/etc/grafana/grafana.ini"
@@ -54,7 +60,7 @@
 
 - name: Configurar Prometheus como fuente de datos en Grafana
   uri:
-    url: "http://localhost:3000/api/datasources"
+    url: "https://localhost:3000/api/datasources"
     method: POST
     user: admin
     password: admin
@@ -65,15 +71,24 @@
       {
         "name": "Prometheus",
         "type": "prometheus",
-        "url": "http://localhost:9090",
+        "url": "https://localhost:9090",
         "access": "proxy",
-        "isDefault": true
+        "isDefault": true,
+        "jsonData": {
+          "httpMethod": "POST",
+          "insecureSkipVerify": true
+        },
+        "secureJsonData": {
+          "tlsClientCert": "/etc/ssl/certs/monitoring/monitoring.crt",
+          "tlsClientKey": "/etc/ssl/certs/monitoring/monitoring.key"
+        }
       }
     status_code: [200, 409]
+    validate_certs: no  # Disable SSL certificate validation for self-signed certificates
 
 - name: Subir dashboard predefinido a Grafana
   uri:
-    url: "http://localhost:3000/api/dashboards/db"
+    url: "https://localhost:3000/api/dashboards/db"
     method: POST
     user: admin
     password: admin
@@ -83,3 +98,4 @@
     body_format: json
     body: "{{ lookup('file', 'roles/grafana/files/dashboard.json') }}"
     status_code: [200, 409]
+    validate_certs: no  # Disable SSL certificate validation for self-signed certificates

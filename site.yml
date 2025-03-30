@@ -3,6 +3,7 @@
   hosts: monitoring_server
   become: yes
   roles:
+    - tls_monitoring
     - prometheus
     - grafana
 
@@ -10,4 +11,6 @@
   hosts: remote_servers
   become: yes
   roles:
+    - tls_node_exporter
+    - nginx_proxy
     - node_exporter

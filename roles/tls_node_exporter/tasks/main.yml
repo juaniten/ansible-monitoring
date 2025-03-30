@@ -22,7 +22,6 @@
   openssl_certificate:
     path: "/etc/ssl/certs/node_exporter/node_exporter.crt"
     csr_path: "/etc/ssl/certs/node_exporter/node_exporter.csr"
-    key_path: "/etc/ssl/certs/node_exporter/node_exporter.key"
+    privatekey_path: "/etc/ssl/certs/node_exporter/node_exporter.key"
     provider: selfsigned
     state: present
-    days: 365

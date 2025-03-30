@@ -7,6 +7,8 @@
     name: prometheus-node-exporter
     state: present
 
+
+
 - name: Habilitar y reiniciar Node Exporter
   service:
     name: prometheus-node-exporter

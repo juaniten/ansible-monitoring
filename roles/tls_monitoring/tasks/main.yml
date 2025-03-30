@@ -22,7 +22,6 @@
   openssl_certificate:
     path: "/etc/ssl/certs/monitoring/monitoring.crt"
     csr_path: "/etc/ssl/certs/monitoring/monitoring.csr"
-    key_path: "/etc/ssl/certs/monitoring/monitoring.key"
+    privatekey_path: "/etc/ssl/certs/monitoring/monitoring.key"
     provider: selfsigned
     state: present
-    days: 365

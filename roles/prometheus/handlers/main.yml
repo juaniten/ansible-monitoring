@@ -1,0 +1,13 @@
+---
+- name: Restart Prometheus
+  systemd:
+    name: prometheus
+    state: restarted
+    enabled: yes
+
+- name: Reload systemd and Restart Prometheus
+  shell: |
+    systemctl daemon-reload
+    systemctl restart prometheus
+  args:
+    executable: /bin/bash
