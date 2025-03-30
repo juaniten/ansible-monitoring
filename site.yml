@@ -1,6 +1,17 @@
+- hosts: all
+  become: true
+  pre_tasks:
+
+  - name: update repository index (Ubuntu)
+    tags: always
+    apt:
+      update_cache: yes
+    changed_when: false
+    when: ansible_distribution == "Ubuntu"
+
 - name: Configure Monitoring Servers
   hosts: monitoring_server
-  become: yes
+  become: true
   roles:
     - tls_monitoring
     - prometheus
@@ -8,7 +19,7 @@
 
 - name: Configure Remote Servers (Node Exporter)
   hosts: remote_servers
-  become: yes
+  become: true
   roles:
     - tls_node_exporter
     - nginx_remote_servers
