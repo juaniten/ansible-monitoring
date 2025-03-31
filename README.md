@@ -1,6 +1,8 @@
-# Devops Engineer Challenge
+# Ansible Monitoring Deployment
 
-## Diseño de solución de monitorización centralizada
+Este repositorio recoge el trabajo de un DevOps challenge desarrollado durante un fin de semana.
+
+## Planteamiento: diseño de solución de monitorización centralizada
 
 Queremos construir una solución de **monitorización centralizada** para nuestra infraestructura, con las siguientes premisas:
 
@@ -16,8 +18,6 @@ Basándonos en estos requisitos,
 - ¿Cómo harías el **despliegue automatizado** de la solución en todos los servidores?
 - ¿Cómo manejarías la **retención de datos** y la **escalabilidad** de la plataforma?
 - ¿Podrías construir una **pequeña prueba de concepto** para validar la solución propuesta?
-
-> Nota: Sube tu solución a este repositorio, incluyendo la explicación en Markdown para facilitar su lectura.
 
 ## Diseño y herramientas de la solución
 
@@ -168,5 +168,3 @@ Si bien esta implementación inicial solo establece una base mínima funcional, 
 3. **Automatización y mantenimiento:** podríamos incluir herramientas como Ansible Vault para manejar credenciales de forma segura. También sería recomendable desarrollar mecanismos de actualización y rollback de las herramientas de monitorización sin afectar la disponibilidad del sistema.
 
 4. **Gestión de logs:** además de integrar Loki y Promtail, se podría configurar una estrategia de retención y almacenamiento distribuido para los logs, con reglas de alerta en Grafana y análisis centralizado.
-
-¡Gracias por la oportunidad de dedicar tiempo a esta prueba! Quedo a vuestra disposición :\)
